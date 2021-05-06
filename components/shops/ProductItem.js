@@ -35,16 +35,25 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 20,
+    backgroundColor: "white",
     color: Colors.accent,
+    zIndex: 1,
   },
   price: {
+    position: "absolute",
+    bottom: 20,
+    width: "100%",
+    left: 20,
     fontSize: 15,
+    backgroundColor: "white",
     color: Colors.accent,
   },
   image: {
+    position: "absolute",
+    top: 20,
     alignSelf: "center",
-    height: "80%",
-    width: "50%",
+    height: "100%",
+    width: "100%",
   },
 });
 export default ProductItem;
