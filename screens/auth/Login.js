@@ -18,8 +18,14 @@ import { login } from "../../redux/actions/user";
 const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  };
   const handlerLogin = () => {
-    if (email.trim() === "" || password.trim() === "") {
+    if (!validateEmail(email)) {
+      Alert.alert("กรุณาใส่อีเมลให้ถูกต้อง");
+    } else if (email.trim() === "" || password.trim() === "") {
       Alert.alert("กรุณาใส่ข้อมูลให้ถูกต้อง");
     } else {
       const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
@@ -61,7 +67,8 @@ const Login = (props) => {
       <View style={styles.container__input}>
         <Entypo name="lock" size={24} color="black" />
         <TextInput
-          style={styles.input}
+          secureTextEntry={true}
+          style={{ ...styles.input }}
           onChangeText={(text) => {
             setPassword(text);
           }}
@@ -106,7 +113,7 @@ export const styles = StyleSheet.create({
     alignSelf: "center",
     height: Platform.OS === "android" ? "30%" : "40%",
     width: "100%",
-    borderRadius: Platform.OS === "android" ? 0 : 30,
+    borderRadius: Platform.OS === "android" ? 0 : 20,
     marginBottom: 10,
   },
   text: {
@@ -152,7 +159,7 @@ export const styles = StyleSheet.create({
     height: Platform.OS === "android" ? 100 : 120,
     position: "absolute",
     bottom: 0,
-    borderRadius: Platform.OS === "android" ? 0 : 30,
+    borderRadius: Platform.OS === "android" ? 0 : 20,
     flexDirection: "row",
     justifyContent: "center",
     paddingTop: 30,

@@ -3,14 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   Image,
   TouchableOpacity,
-  Alert,
   Platform,
 } from "react-native";
 import { connect } from "react-redux";
-import { logout, login } from "../../redux/actions/user";
 import {
   FontAwesome,
   FontAwesome5,
@@ -31,10 +28,6 @@ const ShopMenuScreen = (props) => {
             props.navigation.navigate("Shop");
           }}
         >
-          <Image
-            style={styles.imagebutton}
-            source={require("../../assets/store.jpg")}
-          />
           <MaterialCommunityIcons
             name="store"
             size={60}
@@ -45,7 +38,7 @@ const ShopMenuScreen = (props) => {
         <TouchableOpacity
           style={styles.item}
           onPress={() => {
-            props.navigation.navigate("Order");
+            props.navigation.navigate("cartScreen");
           }}
         >
           <FontAwesome name="shopping-cart" size={50} color={Colors.accent} />
@@ -54,7 +47,7 @@ const ShopMenuScreen = (props) => {
         <TouchableOpacity
           style={styles.item}
           onPress={() => {
-            props.navigation.navigate("Log");
+            props.navigation.navigate("logScreen");
           }}
         >
           <FontAwesome5 name="history" size={50} color={Colors.accent} />
@@ -117,11 +110,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.accent,
     marginHorizontal: 5,
-  },
-  imagebutton: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-    opacity: 0.1,
   },
 });

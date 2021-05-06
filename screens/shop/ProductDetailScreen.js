@@ -6,16 +6,17 @@ import {
   Image,
   StyleSheet,
   ScrollView,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import Colors from "../../constants/Color";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, SimpleLineIcons } from "@expo/vector-icons";
 import { connect } from "react-redux";
+import { Placeholder, PlaceholderLine, Fade } from "rn-placeholder";
 const ProductDetailScreen = (props) => {
   const [productDetail, setProductDetail] = useState();
   const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
   const { productId, shopId } = props.route.params;
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     axios({
       url: `http://${domainname}:8000/api/product/customerGetDetail`,
@@ -24,7 +25,10 @@ const ProductDetailScreen = (props) => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => setProductDetail(res.data));
+    }).then((res) => {
+      setProductDetail(res.data);
+      setLoading(false);
+    });
   }, []);
 
   const orderHandler = () => {
@@ -43,8 +47,8 @@ const ProductDetailScreen = (props) => {
       },
     }).then((res) => {
       if (res.data) {
-        props.navigation.navigate("Order", {
-          params: { id: res.data.id },
+        props.navigation.navigate("cartScreen", {
+          id: res.data.id,
         });
       }
     });
@@ -55,36 +59,73 @@ const ProductDetailScreen = (props) => {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.container}>
-        {productDetail ? (
-          <Fragment>
-            <Image
-              style={styles.image}
-              source={{
-                uri: `http://${domainname}:8000/${productDetail.image}`,
+        {loading ? (
+          <Placeholder Animation={Fade}>
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                height: "100%",
+                alignItems: "flex-start",
+                justifyContent: "space-around",
               }}
-            />
-            <View style={styles.detail}>
-              <Text style={styles.text}>ชื่อสินค้า :</Text>
-              <Text style={styles.text}>{productDetail.name}</Text>
+            >
+              <PlaceholderLine
+                width={92}
+                height={400}
+                style={{
+                  borderRadius: 10,
+                  marginTop: 20,
+                  marginBottom: 20,
+                }}
+              />
+              {[0, 0, 0, 0].map((value, index) => (
+                <PlaceholderLine
+                  key={index}
+                  width={92}
+                  height={50}
+                  style={{
+                    borderRadius: 10,
+                    marginBottom: 20,
+                  }}
+                />
+              ))}
             </View>
-            <View style={styles.detail}>
-              <Text style={styles.text}>รายละเอียดสินค้า :</Text>
-              <Text style={styles.text}>{productDetail.detail}</Text>
-            </View>
-            <View style={styles.detail}>
-              <Text style={styles.text}>ราคาสินค้า :</Text>
-              <Text style={styles.text}>{productDetail.price} บาท</Text>
-            </View>
-            <View style={styles.detail}>
-              <Text style={styles.text}>จำนวนที่เหลือ :</Text>
-              <Text style={styles.text}>{productDetail.amount} ชิ้น</Text>
-            </View>
+          </Placeholder>
+        ) : (
+          <Fragment>
+            {productDetail ? (
+              <Fragment>
+                <Image
+                  style={styles.image}
+                  source={{
+                    uri: `http://${domainname}:8000/${productDetail.image}`,
+                  }}
+                />
+                <View style={styles.detail}>
+                  <Text style={styles.text}>ชื่อสินค้า :</Text>
+                  <Text style={styles.text}>{productDetail.name}</Text>
+                </View>
+                <View style={styles.detail}>
+                  <Text style={styles.text}>รายละเอียดสินค้า :</Text>
+                  <Text style={styles.text}>{productDetail.detail}</Text>
+                </View>
+                <View style={styles.detail}>
+                  <Text style={styles.text}>ราคาสินค้า :</Text>
+                  <Text style={styles.text}>{productDetail.price} บาท</Text>
+                </View>
+                <View style={styles.detail}>
+                  <Text style={styles.text}>จำนวนที่เหลือ :</Text>
+                  <Text style={styles.text}>{productDetail.amount} ชิ้น</Text>
+                </View>
+              </Fragment>
+            ) : null}
+            <TouchableOpacity style={styles.button} onPress={orderHandler}>
+              <Text style={styles.textbtn}>ใส่ตระกร้า</Text>
+              <FontAwesome5 name="cart-arrow-down" size={25} color="black" />
+            </TouchableOpacity>
           </Fragment>
-        ) : null}
-        <TouchableOpacity style={styles.button} onPress={orderHandler}>
-          <Text style={styles.textbtn}>ใส่ตระกร้า</Text>
-          <FontAwesome5 name="cart-arrow-down" size={25} color="black" />
-        </TouchableOpacity>
+        )}
       </View>
     </ScrollView>
   );
@@ -96,7 +137,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
     justifyContent: "flex-start",
-    paddingTop: 10,
     paddingBottom: 130,
   },
   image: {

@@ -6,15 +6,17 @@ import CartScreen from "../../screens/shop/CartScreen";
 import ProductDetailScreen from "../../screens/shop/ProductDetailScreen";
 import CartDetailScreen from "../../screens/shop/CartDetailScreen";
 import LogScreen from "../../screens/shop/LogScreen";
-import { NavigationContainer } from "@react-navigation/native";
+import ShopMenuScreen from "../../screens/shop/ShopMenuScreen";
 import Colors from "../../constants/Color";
 import { Platform } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { FontAwesome } from "@expo/vector-icons";
 const Stack = createStackNavigator();
 
 export const ShopNavigation = () => {
   return (
     <Stack.Navigator
-      screenOptions={{
+      screenOptions={({ navigation }) => ({
         headerTitleStyle:
           Platform.OS === "android"
             ? {
@@ -24,7 +26,21 @@ export const ShopNavigation = () => {
                 textAlign: "center",
               }
             : null,
-      }}
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("cartScreen");
+            }}
+          >
+            <FontAwesome
+              name="shopping-cart"
+              size={25}
+              color={Colors.accent}
+              style={{ marginRight: 15 }}
+            />
+          </TouchableOpacity>
+        ),
+      })}
     >
       <Stack.Screen
         name="shopList"
@@ -63,11 +79,25 @@ export const ShopNavigation = () => {
   );
 };
 
-export const OrderNavigation = () => {
+export const MainNavigation = () => {
   return (
     <Stack.Navigator
-      screenOptions={{ headerTitleStyle: { alignSelf: "center" } }}
+      screenOptions={{
+        headerTitleStyle: { alignSelf: "center" },
+      }}
     >
+      <Stack.Screen
+        name="menuScreen"
+        component={ShopMenuScreen}
+        options={{
+          headerShown: false,
+          title: "เมนู",
+          headerTintColor: Colors.accent,
+          headerStyle: {
+            backgroundColor: Colors.primary,
+          },
+        }}
+      />
       <Stack.Screen
         name="cartScreen"
         component={CartScreen}
@@ -90,15 +120,6 @@ export const OrderNavigation = () => {
           },
         }}
       />
-    </Stack.Navigator>
-  );
-};
-
-export const logNavigation = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{ headerTitleStyle: { alignSelf: "center" } }}
-    >
       <Stack.Screen
         name="logScreen"
         component={LogScreen}

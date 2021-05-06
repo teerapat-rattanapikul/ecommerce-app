@@ -15,12 +15,21 @@ const Register = (props) => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  };
   const handlerReigster = () => {
-    if (email.trim() === "" || name.trim() === "" || password.trim() === "") {
+    if (!validateEmail(email)) {
+      Alert.alert("กรุณาใส่อีเมลให้ถูกต้อง");
+    } else if (
+      email.trim() === "" ||
+      name.trim() === "" ||
+      password.trim() === ""
+    ) {
       Alert.alert("กรุณาใส่ข้อมูลให้ถูกต้อง");
     } else {
-        const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
+      const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
       axios({
         url: `http://${domainname}:8000/api/user/register`,
         method: "post",
@@ -77,6 +86,7 @@ const Register = (props) => {
       <View style={styles.container__input}>
         <Entypo name="lock" size={24} color="black" />
         <TextInput
+          secureTextEntry={true}
           style={styles.input}
           onChangeText={(text) => {
             setPassword(text);

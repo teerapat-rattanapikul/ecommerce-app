@@ -11,7 +11,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/Color";
 import axios from "axios";
-import { StackActions } from "@react-navigation/native";
+import { Placeholder, PlaceholderLine, Fade } from "rn-placeholder";
 const CartDetailScreen = (props) => {
   const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
   const { id } = props.route.params;
@@ -21,6 +21,7 @@ const CartDetailScreen = (props) => {
   const [shopName, setShopName] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     axios({
       url: `http://${domainname}:8000/api/order/cartOrderDetail`,
@@ -37,6 +38,7 @@ const CartDetailScreen = (props) => {
       setShopName(res.data.product.shop.name);
       setImage(res.data.product.image);
       setName(res.data.product.name);
+      setLoading(false);
     });
   }, []);
 
@@ -78,58 +80,100 @@ const CartDetailScreen = (props) => {
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 130 }}>
-      <View style={styles.order}>
-        <Text style={styles.name}>จากร้าน {shopName}</Text>
-        <Image
-          style={styles.image}
-          source={{ uri: `http://${domainname}:8000/${image}` }}
-        />
-        <Text style={styles.name}>{name}</Text>
-      </View>
-      <View style={styles.cash}>
-        <Text style={styles.text}>การชำระเงิน</Text>
-        <Text style={styles.text}>จำนวนสินค้าที่มี {amount} ชิ้น</Text>
-        <View style={styles.amount}>
-          <Text style={styles.name}>สั่งซื้อ</Text>
-          <TouchableOpacity
-            style={styles.actionAmount}
-            onPress={() => {
-              if (totalAmount !== 1) {
-                setTotalAmount(totalAmount - 1);
-                setTotalPrice((totalPrice / totalAmount) * (totalAmount - 1));
-              }
+      {loading ? (
+        <Placeholder Animation={Fade}>
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              height: "100%",
+              alignItems: "flex-start",
+              justifyContent: "space-around",
             }}
           >
-            <Text style={styles.text}>-</Text>
-          </TouchableOpacity>
-          <View style={{ ...styles.actionAmount, backgroundColor: "#fff" }}>
-            <Text style={styles.text}>{totalAmount}</Text>
+            <PlaceholderLine
+              width={90}
+              height={400}
+              style={{
+                marginTop: 40,
+                borderRadius: 10,
+                marginBottom: 40,
+              }}
+            />
+            <PlaceholderLine
+              width={90}
+              height={200}
+              style={{
+                borderRadius: 10,
+                marginBottom: 40,
+              }}
+            />
           </View>
-          <TouchableOpacity
-            style={styles.actionAmount}
-            onPress={() => {
-              if (totalAmount < amount) {
-                setTotalAmount(totalAmount + 1);
-                setTotalPrice((totalPrice / totalAmount) * (totalAmount + 1));
-              }
-            }}
-          >
-            <Text style={styles.text}>+</Text>
+        </Placeholder>
+      ) : (
+        <Fragment>
+          <View style={styles.order}>
+            <Text style={styles.name}>จากร้าน {shopName}</Text>
+            <Image
+              style={styles.image}
+              source={{ uri: `http://${domainname}:8000/${image}` }}
+            />
+            <Text style={styles.name}>{name}</Text>
+          </View>
+          <View style={styles.cash}>
+            <Text style={styles.text}>การชำระเงิน</Text>
+            <Text style={styles.text}>จำนวนสินค้าที่มี {amount} ชิ้น</Text>
+            <View style={styles.amount}>
+              <Text style={styles.name}>สั่งซื้อ</Text>
+              <TouchableOpacity
+                style={styles.actionAmount}
+                onPress={() => {
+                  if (totalAmount !== 1) {
+                    setTotalAmount(totalAmount - 1);
+                    setTotalPrice(
+                      (totalPrice / totalAmount) * (totalAmount - 1)
+                    );
+                  }
+                }}
+              >
+                <Text style={styles.text}>-</Text>
+              </TouchableOpacity>
+              <View style={{ ...styles.actionAmount, backgroundColor: "#fff" }}>
+                <Text style={styles.text}>{totalAmount}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.actionAmount}
+                onPress={() => {
+                  if (totalAmount < amount) {
+                    setTotalAmount(totalAmount + 1);
+                    setTotalPrice(
+                      (totalPrice / totalAmount) * (totalAmount + 1)
+                    );
+                  }
+                }}
+              >
+                <Text style={styles.text}>+</Text>
+              </TouchableOpacity>
+              <Text style={styles.name}>ชิ้น</Text>
+            </View>
+            <Text style={styles.text}>ราคารวม {totalPrice} บาท</Text>
+          </View>
+          <TouchableOpacity style={styles.button} onPress={buy}>
+            <Text style={styles.text}>จ่ายเงิน</Text>
+            <MaterialCommunityIcons
+              name="cash-multiple"
+              size={30}
+              color="black"
+            />
           </TouchableOpacity>
-          <Text style={styles.name}>ชิ้น</Text>
-        </View>
-        <Text style={styles.text}>ราคารวม {totalPrice} บาท</Text>
-      </View>
-      <TouchableOpacity style={styles.button} onPress={buy}>
-        <Text style={styles.text}>จ่ายเงิน</Text>
-        <MaterialCommunityIcons name="cash-multiple" size={30} color="black" />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{ ...styles.button, backgroundColor: "red" }}
-        onPress={cancle}
-      >
-        <Text style={styles.text}>ยกเลิก</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={{ ...styles.button, backgroundColor: "red" }}
+            onPress={cancle}
+          >
+            <Text style={styles.text}>ยกเลิก</Text>
+          </TouchableOpacity>
+        </Fragment>
+      )}
     </ScrollView>
   );
 };

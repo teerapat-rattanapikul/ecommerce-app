@@ -10,11 +10,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ShopMenuScreen from "../screens/shop/ShopMenuScreen";
 import SettingScreen from "../screens/shop/SettingScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import {
-  ShopNavigation,
-  OrderNavigation,
-  logNavigation,
-} from "./shop/ShopNavigation";
+import { ShopNavigation, MainNavigation } from "./shop/ShopNavigation";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { Platform } from "react-native";
 import Colors from "../constants/Color";
@@ -70,7 +66,7 @@ function CustomerTab() {
       >
         <Tab.Screen
           name="Home"
-          component={ShopMenuScreen}
+          component={MainNavigation}
           options={{
             tabBarIcon: ({ focused }) => (
               <View style={styles.containerButton}>
@@ -95,32 +91,6 @@ function CustomerTab() {
           }}
         />
 
-        <Tab.Screen
-          name="Order"
-          component={OrderNavigation}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={styles.containerButton}>
-                <FontAwesome
-                  name="shopping-cart"
-                  size={Platform.OS === "android" ? 25 : 35}
-                  color="black"
-                  style={{
-                    color: focused ? Colors.accent : Colors.primary,
-                  }}
-                />
-                <Text
-                  style={{
-                    fontSize: Platform.OS === "android" ? 12 : 15,
-                    color: focused ? Colors.accent : Colors.primary,
-                  }}
-                >
-                  ตะกร้า
-                </Text>
-              </View>
-            ),
-          }}
-        />
         <Tab.Screen
           name="Shop"
           component={ShopNavigation}
@@ -148,32 +118,7 @@ function CustomerTab() {
             tabBarButton: (props) => <CustomSearchButton {...props} />,
           }}
         />
-        <Tab.Screen
-          name="Log"
-          component={logNavigation}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={styles.containerButton}>
-                <FontAwesome5
-                  name="history"
-                  size={Platform.OS === "android" ? 25 : 35}
-                  color="black"
-                  style={{
-                    color: focused ? Colors.accent : Colors.primary,
-                  }}
-                />
-                <Text
-                  style={{
-                    fontSize: Platform.OS === "android" ? 12 : 15,
-                    color: focused ? Colors.accent : Colors.primary,
-                  }}
-                >
-                  ประวัติ
-                </Text>
-              </View>
-            ),
-          }}
-        />
+
         <Tab.Screen
           name="setting"
           component={SettingScreen}

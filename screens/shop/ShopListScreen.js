@@ -10,12 +10,12 @@ import {
   Platform,
 } from "react-native";
 import Colors from "../../constants/Color";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import axios from "axios";
 import ShopItem from "../../components/shops/ShopItem";
 import ProductItem from "../../components/shops/ProductItem";
 import { useIsFocused } from "@react-navigation/native";
-
+import { Placeholder, PlaceholderLine, Fade } from "rn-placeholder";
 const ShopListScreen = (props) => {
   const [search, setSearch] = useState("");
   const [shopList, setShopList] = useState(0);
@@ -24,6 +24,7 @@ const ShopListScreen = (props) => {
   const [isSearch, setIsSearch] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [searchItem, setSearchItem] = useState([]);
+  const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
   const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
   useEffect(() => {
@@ -37,13 +38,17 @@ const ShopListScreen = (props) => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => setShopList(res.data));
+    }).then((res) => {
+      setShopList(res.data);
+      setLoading(false);
+    });
   }, [isFocused]);
 
   const handlerSearch = () => {
     if (search.trim() === "") {
-      Alert.alert("กรุณาใส่คำค้นหา");
+      setIsSearch(false);
     } else {
+      setLoading(true);
       axios({
         url: `http://${domainname}:8000/api/shop/search`,
         method: "post",
@@ -64,6 +69,7 @@ const ShopListScreen = (props) => {
           setShopAmount(res.data.shopList.length);
           setProductAmount(res.data.productList.length);
         }
+        setLoading(false);
       });
     }
   };
@@ -100,52 +106,88 @@ const ShopListScreen = (props) => {
         />
       </View>
       <View style={styles.container__item}>
-        {!isSearch ? (
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={shopList}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={(shop) => (
-              <ShopItem
-                name={shop.item.name}
-                id={shop.item.id}
-                shopHandler={shopHandler}
-              />
-            )}
-          />
+        {loading ? (
+          <Placeholder Animation={Fade}>
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                height: "100%",
+                alignItems: "center",
+                justifyContent: "space-around",
+              }}
+            >
+              {[0, 0, 0, 0].map((value, index) => (
+                <PlaceholderLine
+                  key={index}
+                  width={92}
+                  height={100}
+                  style={{
+                    borderRadius: 10,
+                    marginVertical: -60,
+                  }}
+                />
+              ))}
+            </View>
+          </Placeholder>
         ) : (
           <Fragment>
-            {notFound ? (
-              <Text style={styles.text}>ไม่เจอข้อมูลที่ท่านค้นหา</Text>
+            {!isSearch ? (
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                data={shopList}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={(shop) => (
+                  <ShopItem
+                    name={shop.item.name}
+                    id={shop.item.id}
+                    shopHandler={shopHandler}
+                  />
+                )}
+              />
             ) : (
               <Fragment>
-                <Text style={styles.text}>
-                  ผลการค้นหาพบ {shopAmount} ร้านค้า และ สินค้า {productAmount}{" "}
-                  ชิ้น
-                </Text>
-                <FlatList
-                  showsVerticalScrollIndicator={false}
-                  data={searchItem}
-                  keyExtractor={(item) => item.id.toString() + item.name}
-                  renderItem={(item) =>
-                    item.item.image ? (
-                      <ProductItem
-                        id={item.item.id}
-                        name={item.item.name}
-                        price={item.item.price}
-                        image={item.item.image}
-                        shopId={item.item.shopId}
-                        productHandler={productHandler}
-                      />
-                    ) : (
-                      <ShopItem
-                        name={item.item.name}
-                        id={item.item.id}
-                        shopHandler={shopHandler}
-                      />
-                    )
-                  }
-                />
+                {notFound ? (
+                  <View>
+                    <FontAwesome5
+                      style={{ textAlign: "center" }}
+                      name="store-alt-slash"
+                      size={120}
+                      color={Colors.accent}
+                    />
+                    <Text style={styles.text}>ไม่เจอข้อมูลที่ท่านค้นหา</Text>
+                  </View>
+                ) : (
+                  <Fragment>
+                    <Text style={styles.text}>
+                      ผลการค้นหาพบ {shopAmount} ร้านค้า และ สินค้า{" "}
+                      {productAmount} ชิ้น
+                    </Text>
+                    <FlatList
+                      showsVerticalScrollIndicator={false}
+                      data={searchItem}
+                      keyExtractor={(item) => item.id.toString() + item.name}
+                      renderItem={(item) =>
+                        item.item.image ? (
+                          <ProductItem
+                            id={item.item.id}
+                            name={item.item.name}
+                            price={item.item.price}
+                            image={item.item.image}
+                            shopId={item.item.shopId}
+                            productHandler={productHandler}
+                          />
+                        ) : (
+                          <ShopItem
+                            name={item.item.name}
+                            id={item.item.id}
+                            shopHandler={shopHandler}
+                          />
+                        )
+                      }
+                    />
+                  </Fragment>
+                )}
               </Fragment>
             )}
           </Fragment>
@@ -193,7 +235,8 @@ const styles = StyleSheet.create({
   text: {
     color: Colors.accent,
     textAlign: "center",
-    fontSize: 15,
+    fontSize: 20,
+    marginVertical: 10,
   },
 });
 
