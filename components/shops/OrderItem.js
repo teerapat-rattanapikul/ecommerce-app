@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Colors from "../../constants/Color";
-
 const OrderItem = (props) => {
   const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
   const dayMonthYear = (dateTime) => {

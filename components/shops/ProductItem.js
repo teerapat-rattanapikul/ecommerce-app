@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Colors from "../../constants/Color";
-
+import { numberWithCommas } from "../../helppers/moneyFormat";
 const ProductItem = (props) => {
   const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
   return (
@@ -16,7 +16,7 @@ const ProductItem = (props) => {
         style={styles.image}
         source={{ uri: `http://${domainname}:8000/${props.image}` }}
       />
-      <Text style={styles.price}>{props.price}</Text>
+      <Text style={styles.price}>{numberWithCommas(props.price)}</Text>
     </TouchableOpacity>
   );
 };

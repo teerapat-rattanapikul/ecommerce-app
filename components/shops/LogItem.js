@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { max } from "react-native-reanimated";
 import Colors from "../../constants/Color";
+import { numberWithCommas } from "../../helppers/moneyFormat";
 
 const LogItem = (props) => {
   const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
@@ -23,8 +23,12 @@ const LogItem = (props) => {
         <Text style={styles.name}>
           เมื่อวันที่ {dayMonthYear(props.logDate)}
         </Text>
-        <Text style={styles.name}>จำนวน {props.totalAmount} ชิ้น</Text>
-        <Text style={styles.name}>เป็นเงิน {props.totalPrice} บาท</Text>
+        <Text style={styles.name}>
+          จำนวน {numberWithCommas(props.totalAmount)} ชิ้น
+        </Text>
+        <Text style={styles.name}>
+          เป็นเงิน {numberWithCommas(props.totalPrice)} บาท
+        </Text>
         <Text style={styles.name}>จากร้าน {props.shop}</Text>
         {props.status === "Success" ? (
           <Text style={{ ...styles.status, color: "green" }}>
@@ -81,6 +85,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     height: "100%",
     width: "40%",
+    marginRight: 15,
   },
   column: {
     flexDirection: "column",

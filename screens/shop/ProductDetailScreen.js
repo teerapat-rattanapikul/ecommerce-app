@@ -9,9 +9,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Colors from "../../constants/Color";
-import { FontAwesome5, SimpleLineIcons } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { Placeholder, PlaceholderLine, Fade } from "rn-placeholder";
+import { numberWithCommas } from "../../helppers/moneyFormat";
 const ProductDetailScreen = (props) => {
   const [productDetail, setProductDetail] = useState();
   const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
@@ -112,11 +113,15 @@ const ProductDetailScreen = (props) => {
                 </View>
                 <View style={styles.detail}>
                   <Text style={styles.text}>ราคาสินค้า :</Text>
-                  <Text style={styles.text}>{productDetail.price} บาท</Text>
+                  <Text style={styles.text}>
+                    {numberWithCommas(productDetail.price)} บาท
+                  </Text>
                 </View>
                 <View style={styles.detail}>
                   <Text style={styles.text}>จำนวนที่เหลือ :</Text>
-                  <Text style={styles.text}>{productDetail.amount} ชิ้น</Text>
+                  <Text style={styles.text}>
+                    {numberWithCommas(productDetail.amount)} ชิ้น
+                  </Text>
                 </View>
               </Fragment>
             ) : null}

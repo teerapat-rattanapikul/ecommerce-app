@@ -7,11 +7,13 @@ import {
   Platform,
   ScrollView,
   Image,
+  Alert,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "../../constants/Color";
 import axios from "axios";
 import { Placeholder, PlaceholderLine, Fade } from "rn-placeholder";
+import { numberWithCommas } from "../../helppers/moneyFormat";
 const CartDetailScreen = (props) => {
   const domainname = Platform.OS === "android" ? "10.0.2.2" : "localhost";
   const { id } = props.route.params;
@@ -122,7 +124,9 @@ const CartDetailScreen = (props) => {
           </View>
           <View style={styles.cash}>
             <Text style={styles.text}>การชำระเงิน</Text>
-            <Text style={styles.text}>จำนวนสินค้าที่มี {amount} ชิ้น</Text>
+            <Text style={styles.text}>
+              จำนวนสินค้าที่มี {numberWithCommas(amount)} ชิ้น
+            </Text>
             <View style={styles.amount}>
               <Text style={styles.name}>สั่งซื้อ</Text>
               <TouchableOpacity
@@ -139,7 +143,7 @@ const CartDetailScreen = (props) => {
                 <Text style={styles.text}>-</Text>
               </TouchableOpacity>
               <View style={{ ...styles.actionAmount, backgroundColor: "#fff" }}>
-                <Text style={styles.text}>{totalAmount}</Text>
+                <Text style={styles.text}>{numberWithCommas(totalAmount)}</Text>
               </View>
               <TouchableOpacity
                 style={styles.actionAmount}
@@ -156,9 +160,32 @@ const CartDetailScreen = (props) => {
               </TouchableOpacity>
               <Text style={styles.name}>ชิ้น</Text>
             </View>
-            <Text style={styles.text}>ราคารวม {totalPrice} บาท</Text>
+            <Text style={styles.text}>
+              ราคารวม {numberWithCommas(totalPrice)} บาท
+            </Text>
           </View>
-          <TouchableOpacity style={styles.button} onPress={buy}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              Alert.alert(
+                "สั่งซื้อสินค้า",
+                `คุณต้องการสั่งซื้อ ${name} จำนวน ${totalAmount} ชิ้น หรือไม่?`,
+                [
+                  {
+                    text: "ไม่",
+                    style: "cancel",
+                  },
+                  {
+                    text: "ใช่",
+                    onPress: async () => {
+                      buy();
+                    },
+                  },
+                ],
+                { cancelable: false }
+              );
+            }}
+          >
             <Text style={styles.text}>จ่ายเงิน</Text>
             <MaterialCommunityIcons
               name="cash-multiple"
@@ -168,7 +195,25 @@ const CartDetailScreen = (props) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{ ...styles.button, backgroundColor: "red" }}
-            onPress={cancle}
+            onPress={() => {
+              Alert.alert(
+                "ยกเลิกการสั่งซื้อ",
+                `คุณต้องนำ ${name} ออกจากตะกร้าสินค้าหรือไม่?`,
+                [
+                  {
+                    text: "ไม่",
+                    style: "cancel",
+                  },
+                  {
+                    text: "ใช่",
+                    onPress: async () => {
+                      cancle();
+                    },
+                  },
+                ],
+                { cancelable: false }
+              );
+            }}
           >
             <Text style={styles.text}>ยกเลิก</Text>
           </TouchableOpacity>
